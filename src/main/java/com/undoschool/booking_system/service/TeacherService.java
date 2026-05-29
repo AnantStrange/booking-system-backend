@@ -3,8 +3,11 @@ package com.undoschool.booking_system.service;
 import com.undoschool.booking_system.entity.*;
 import com.undoschool.booking_system.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import jakarta.persistence.EntityNotFoundException;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -27,9 +30,13 @@ public class TeacherService {
     @Autowired
     private TimezoneService timezoneService;
 
-    /**
-     * Create a new offering
-     */
+    public Teacher validateAndGetTeacher(Long teacherId) {
+        return teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Teacher not found with id: " + teacherId));
+    }
+
     @Transactional
     public Offering createOffering(Offering offering) {
         // Validate teacher exists
@@ -50,8 +57,8 @@ public class TeacherService {
      */
     @Transactional
     public List<Session> addSessions(Long offeringId, List<SessionRequest> sessionRequests, String teacherTimezone) {
-        Offering offering = offeringRepository.findById(offeringId)
-                .orElseThrow(() -> new EntityNotFoundException("Offering not found"));
+        offeringRepository.findById(offeringId).orElseThrow(()
+                -> new EntityNotFoundException("Offering not found"));
 
         List<Session> sessions = sessionRequests.stream().map(req -> {
             Session session = new Session();

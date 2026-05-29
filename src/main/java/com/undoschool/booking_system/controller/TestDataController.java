@@ -4,9 +4,6 @@ import com.undoschool.booking_system.entity.*;
 import com.undoschool.booking_system.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api/test")

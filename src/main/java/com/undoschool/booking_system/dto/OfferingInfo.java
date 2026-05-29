@@ -1,17 +1,15 @@
 package com.undoschool.booking_system.dto;
 
-import java.time.Instant;
 import java.util.List;
 
-public class OfferingDTO {
+public class OfferingInfo {
     private Long id;
     private String name;
     private Long courseId;
     private Long teacherId;
-    private List<SessionDTO> sessions;
-    private Instant createdAt;
+    private List<SessionInfo> sessions;
+	private String createdAtLocal;
     
-    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -24,9 +22,9 @@ public class OfferingDTO {
     public Long getTeacherId() { return teacherId; }
     public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }
     
-    public List<SessionDTO> getSessions() { return sessions; }
-    public void setSessions(List<SessionDTO> sessions) { this.sessions = sessions; }
+    public List<SessionInfo> getSessions() { return sessions; }
+    public void setSessions(List<SessionInfo> sessions) { this.sessions = sessions; }
     
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public String getCreatedAtLocal() { return createdAtLocal; }
+	public void setCreatedAtLocal(String createdAtLocal) { this.createdAtLocal = createdAtLocal; }
 }

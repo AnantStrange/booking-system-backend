@@ -1,56 +1,200 @@
 package com.undoschool.booking_system.controller;
 
+import com.undoschool.booking_system.dto.CourseInfo;
+import com.undoschool.booking_system.dto.CreateCourseRequest;
+import com.undoschool.booking_system.dto.CreateOfferingRequest;
+import com.undoschool.booking_system.dto.CreateTeacherRequest;
+import com.undoschool.booking_system.dto.OfferingInfo;
+import com.undoschool.booking_system.dto.SessionInfo;
+import com.undoschool.booking_system.dto.TeacherProfile;
+import com.undoschool.booking_system.dto.TeacherResponse;
+import com.undoschool.booking_system.entity.Course;
 import com.undoschool.booking_system.entity.Offering;
 import com.undoschool.booking_system.entity.Session;
+import com.undoschool.booking_system.entity.Teacher;
+import com.undoschool.booking_system.repository.CourseRepository;
+import com.undoschool.booking_system.repository.OfferingRepository;
+import com.undoschool.booking_system.repository.SessionRepository;
+import com.undoschool.booking_system.repository.TeacherRepository;
 import com.undoschool.booking_system.service.TeacherService;
 import com.undoschool.booking_system.service.TimezoneService;
+import com.undoschool.booking_system.service.TeacherService.SessionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.ZonedDateTime;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/teacher")
+@RequestMapping("/api/teachers")
 public class TeacherController {
-    
+
     @Autowired
     private TeacherService teacherService;
-    
+
     @Autowired
     private TimezoneService timezoneService;
-    
-    // Create offering
-    @PostMapping("/offerings")
-    public ResponseEntity<Offering> createOffering(@RequestBody Offering offering) {
-        Offering created = teacherService.createOffering(offering);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
-    }
-    
-    // Add sessions to offering
-    @PostMapping("/offerings/{offeringId}/sessions")
-    public ResponseEntity<List<Session>> addSessions(
-            @PathVariable Long offeringId,
-            @RequestBody List<Map<String, String>> sessions,
-            @RequestParam String timezone) {
-        
-        List<TeacherService.SessionRequest> requests = sessions.stream().map(s -> {
-            TeacherService.SessionRequest req = new TeacherService.SessionRequest();
-            req.startTime = s.get("startTime");
-            req.endTime = s.get("endTime");
-            return req;
+
+    @Autowired
+    private OfferingRepository offeringRepository;
+
+    @Autowired
+    private SessionRepository sessionRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private TeacherRepository teacherRepository;
+
+    @GetMapping("/{teacherId}/offerings")
+    public ResponseEntity<?> getTeacherOfferings(@PathVariable Long teacherId) {
+        teacherService.validateAndGetTeacher(teacherId);
+
+        List<Offering> offerings = offeringRepository.findByTeacherId(teacherId);
+
+        List<OfferingInfo> result = offerings.stream().map(offering -> {
+            OfferingInfo dto = new OfferingInfo();
+            dto.setId(offering.getId());
+            dto.setName(offering.getName());
+            dto.setCourseId(offering.getCourseId());
+            dto.setTeacherId(offering.getTeacherId());
+            dto.setCreatedAtLocal(timezoneService.getLocalTimeStr(teacherId, "teacher", offering.getCreatedAt()));
+
+            List<Session> sessions = sessionRepository.findByOfferingId(offering.getId());
+            List<SessionInfo> sessionDTOs = sessions.stream().map(session -> {
+                SessionInfo sessionDTO = new SessionInfo();
+                sessionDTO.setId(session.getId());
+                sessionDTO.setStartTimeLocal(session.getStartTime().toString());
+                sessionDTO.setEndTimeLocal(session.getEndTime().toString());
+                sessionDTO.setCreatedAtLocal(
+                        timezoneService.getLocalTimeStr(teacherId, "teacher", session.getCreatedAt()));
+                return sessionDTO;
+            }).toList();
+
+            dto.setSessions(sessionDTOs);
+            return dto;
         }).toList();
-        
-        List<Session> created = teacherService.addSessions(offeringId, requests, timezone);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+
+        return ResponseEntity.ok(result);
     }
-    
-    // Get teacher's offerings
-    @GetMapping("/offerings")
-    public ResponseEntity<List<Offering>> getOfferings(@RequestParam Long teacherId) {
-        List<Offering> offerings = teacherService.getTeacherOfferings(teacherId);
-        return ResponseEntity.ok(offerings);
+
+    @GetMapping("/{teacherId}")
+    public ResponseEntity<?> getTeacherProfile(@PathVariable Long teacherId) {
+        Teacher teacher = teacherService.validateAndGetTeacher(teacherId);
+
+        List<Offering> offerings = offeringRepository.findByTeacherId(teacherId);
+
+        TeacherProfile dto = new TeacherProfile();
+        dto.setId(teacher.getId());
+        dto.setName(teacher.getName());
+        dto.setTimezone(teacher.getTimezone());
+        dto.setTotalOfferings(offerings.size());
+
+        return ResponseEntity.ok(dto);
     }
+
+    // 1. POST /teachers/
+    @PostMapping
+    public ResponseEntity<TeacherResponse> createTeacher(@RequestBody CreateTeacherRequest request) {
+        Teacher teacher = new Teacher();
+        teacher.setName(request.getName());
+        teacher.setTimezone(request.getTimezone());
+
+        Teacher saved = teacherRepository.save(teacher);
+
+        TeacherResponse response = new TeacherResponse();
+        response.setId(saved.getId());
+        response.setName(saved.getName());
+        response.setTimezone(saved.getTimezone());
+        response.setCreatedAt(saved.getCreatedAt().toString());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // 1. POST /teachers/{teacherId}/courses
+    @PostMapping("/{teacherId}/courses")
+    public ResponseEntity<CourseInfo> createCourse(
+            @PathVariable Long teacherId,
+            @RequestBody CreateCourseRequest request) {
+
+        teacherService.validateAndGetTeacher(teacherId);
+
+        Course course = new Course();
+        course.setName(request.getName());
+        course.setDescription(request.getDescription());
+        course.setCreatedAt(java.time.Instant.now());
+
+        Course saved = courseRepository.save(course);
+
+        CourseInfo dto = new CourseInfo();
+        dto.setId(saved.getId());
+        dto.setName(saved.getName());
+        dto.setDescription(saved.getDescription());
+        dto.setCreatedAtLocal(timezoneService.getLocalTimeStr(teacherId, "teacher", saved.getCreatedAt()));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    // 2. POST /teachers/{teacherId}/offerings
+    @PostMapping("/{teacherId}/offerings")
+    public ResponseEntity<OfferingInfo> createOffering(
+            @PathVariable Long teacherId,
+            @RequestBody CreateOfferingRequest request) {
+
+        teacherService.validateAndGetTeacher(teacherId);
+
+        // Check course exists
+        courseRepository.findById(request.getCourseId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Course not found: " + request.getCourseId()));
+
+        Offering offering = new Offering();
+        offering.setName(request.getName());
+        offering.setCourseId(request.getCourseId());
+        offering.setTeacherId(teacherId);
+        offering.setCreatedAt(java.time.Instant.now());
+
+        Offering saved = offeringRepository.save(offering);
+
+        OfferingInfo dto = new OfferingInfo();
+        dto.setId(saved.getId());
+        dto.setName(saved.getName());
+        dto.setCourseId(saved.getCourseId());
+        dto.setTeacherId(saved.getTeacherId());
+        dto.setCreatedAtLocal(timezoneService.getLocalTimeStr(teacherId, "teacher", saved.getCreatedAt()));
+        dto.setSessions(List.of()); // Empty list initially
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    // 3. POST /teachers/offerings/{offeringId}/sessions
+    @PostMapping("/offerings/{offeringId}/sessions")
+    public ResponseEntity<List<SessionInfo>> addSessions(
+            @PathVariable Long teacherID,
+            @PathVariable Long offeringId,
+            @RequestParam String timezone,
+            @RequestBody List<SessionRequest> sessionRequests) {
+
+        Teacher teacher = teacherService.validateAndGetTeacher(teacherID);
+        offeringRepository.findById(offeringId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offering not found: " + offeringId));
+
+        List<Session> savedSessions = teacherService.addSessions(offeringId, sessionRequests,
+                teacher.getTimezone());
+
+        List<SessionInfo> result = savedSessions.stream().map(session -> {
+            SessionInfo dto = new SessionInfo();
+            dto.setId(session.getId());
+            dto.setStartTimeLocal(timezoneService.getLocalTimeStr(teacherID, "teacher", session.getStartTime()));
+            dto.setEndTimeLocal(timezoneService.getLocalTimeStr(teacherID, "teacher", session.getEndTime()));
+            dto.setCreatedAtLocal(timezoneService.getLocalTimeStr(teacherID, "teacher", session.getCreatedAt()));
+            return dto;
+        }).toList();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
 }

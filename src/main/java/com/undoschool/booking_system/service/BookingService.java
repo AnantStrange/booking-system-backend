@@ -3,9 +3,12 @@ package com.undoschool.booking_system.service;
 import com.undoschool.booking_system.entity.*;
 import com.undoschool.booking_system.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.List;
@@ -35,26 +38,27 @@ public class BookingService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Booking bookOffering(Long parentId, Long offeringId) {
 
-        // 1. Validate parent exists
         Parent parent = parentRepository.findById(parentId)
                 .orElseThrow(() -> new EntityNotFoundException("Parent not found with id: " + parentId));
 
-        // 2. Validate offering exists
-        Offering offering = offeringRepository.findById(offeringId)
+        offeringRepository.findById(offeringId)
                 .orElseThrow(() -> new EntityNotFoundException("Offering not found with id: " + offeringId));
 
-        // 3. Check if parent already booked this offering
         if (bookingRepository.existsByParentIdAndOfferingId(parentId, offeringId)) {
-            throw new IllegalStateException("Parent has already booked this offering");
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,  // 409 Conflict
+                    "Parent has already booked this offering"
+                    );
         }
 
-        // 4. Get all sessions for this offering
         List<Session> newSessions = sessionRepository.findByOfferingId(offeringId);
         if (newSessions.isEmpty()) {
-            throw new IllegalStateException("This offering has no sessions");
+            throw new ResponseStatusException(
+                    HttpStatus.UNPROCESSABLE_ENTITY,  
+                    "The requested offering has no sessions created yet !"
+                    );
         }
 
-        // 5. Get all parent's existing bookings with their sessions
         List<Booking> existingBookings = bookingRepository.findByParentId(parentId);
 
         // 6. Check for time conflicts with existing bookings
