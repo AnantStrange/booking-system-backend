@@ -1,0 +1,18 @@
+[
+  {
+    "name": "John Doe",
+    "timezone": "America/New_York"
+  },
+  {
+    "name": "Jane Smith",
+    "timezone": "Asia/Kolkata"
+  },
+  {
+    "name": "Mike Johnson",
+    "timezone": "Europe/London"
+  },
+  {
+    "name": "Sarah Lee",
+    "timezone": "Australia/Sydney"
+  }
+]

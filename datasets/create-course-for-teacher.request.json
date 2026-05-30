@@ -1,0 +1,22 @@
+[
+  {
+    "teacherId": 1,
+    "name": "Mathematics Grade 5",
+    "desc": "Advanced mathematics including algebra and geometry"
+  },
+  {
+    "teacherId": 1,
+    "name": "Physics Fundamentals",
+    "desc": "Introduction to mechanics and energy"
+  },
+  {
+    "teacherId": 2,
+    "name": "English Literature",
+    "desc": "Shakespeare and modern poetry"
+  },
+  {
+    "teacherId": 2,
+    "name": "World History",
+    "desc": "Ancient civilizations to modern era"
+  }
+]

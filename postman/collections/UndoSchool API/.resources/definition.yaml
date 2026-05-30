@@ -1,0 +1,15 @@
+$kind: collection
+name: 'UndoSchool API'
+variables:
+  - key: baseUrl
+    value: 'http://localhost:8080'
+  - key: teacherId
+    value: '1'
+  - key: teacherTimezone
+    value: 'America/New_York'
+  - key: parentId
+    value: '1'
+  - key: courseId
+    value: '1'
+  - key: offeringId
+    value: '1'

@@ -75,47 +75,6 @@ public class CourseController {
         return ResponseEntity.ok(dto);
     }
 
-    // In OfferingController.java (create new) or add to CourseController
-    @RestController
-    @RequestMapping("/api/offerings")
-    public class OfferingController {
-
-        @Autowired
-        private OfferingRepository offeringRepository;
-
-        @Autowired
-        private SessionRepository sessionRepository;
-
-        @GetMapping("/{offeringId}")
-        public ResponseEntity<OfferingInfo> getOffering(@PathVariable Long offeringId) {
-            Offering offering = offeringRepository.findById(offeringId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                            "Offering not found: " + offeringId));
-
-            OfferingInfo dto = new OfferingInfo();
-            dto.setId(offering.getId());
-            dto.setName(offering.getName());
-            dto.setCourseId(offering.getCourseId());
-            dto.setTeacherId(offering.getTeacherId());
-            dto.setCreatedAtLocal(offering.getCreatedAt().toString());
-
-            // Get sessions
-            List<Session> sessions = sessionRepository.findByOfferingId(offeringId);
-            List<SessionInfo> sessionInfos = sessions.stream().map(session -> {
-                SessionInfo si = new SessionInfo();
-                si.setId(session.getId());
-                si.setStartTimeLocal(session.getStartTime().toString());
-                si.setEndTimeLocal(session.getEndTime().toString());
-                si.setCreatedAtLocal(session.getCreatedAt().toString());
-                return si;
-            }).toList();
-
-            dto.setSessions(sessionInfos);
-
-            return ResponseEntity.ok(dto);
-        }
-    }
-
     public ResponseEntity<List<CourseInfo>> getAllCourses() {
         List<Course> courses = courseRepository.findAll();
 

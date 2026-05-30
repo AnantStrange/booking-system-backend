@@ -1,0 +1,27 @@
+[
+  {
+    "teacherId": 1,
+    "name": "Math Summer Batch 2026",
+    "courseId": 1
+  },
+  {
+    "teacherId": 1,
+    "name": "Math Evening Batch",
+    "courseId": 1
+  },
+  {
+    "teacherId": 1,
+    "name": "Physics Summer Batch",
+    "courseId": 2
+  },
+  {
+    "teacherId": 2,
+    "name": "English Summer Batch",
+    "courseId": 3
+  },
+  {
+    "teacherId": 2,
+    "name": "History Summer Batch",
+    "courseId": 4
+  }
+]

@@ -109,12 +109,13 @@ public class TeacherController {
         response.setId(saved.getId());
         response.setName(saved.getName());
         response.setTimezone(saved.getTimezone());
-        response.setCreatedAt(saved.getCreatedAt().toString());
+        response.setCreatedAt(timezoneService.getLocalTimeStr(teacher.getId(), "teacher",
+                    teacher.getCreatedAt()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // 1. POST /teachers/{teacherId}/courses
+    // 2. POST /teachers/{teacherId}/courses
     @PostMapping("/{teacherId}/courses")
     public ResponseEntity<CourseInfo> createCourse(
             @PathVariable Long teacherId,
@@ -138,7 +139,7 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    // 2. POST /teachers/{teacherId}/offerings
+    // 3. POST /teachers/{teacherId}/offerings
     @PostMapping("/{teacherId}/offerings")
     public ResponseEntity<OfferingInfo> createOffering(
             @PathVariable Long teacherId,
@@ -170,12 +171,11 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    // 3. POST /teachers/offerings/{offeringId}/sessions
+    // 4. POST /teachers/offerings/{offeringId}/sessions
     @PostMapping("/offerings/{offeringId}/sessions")
     public ResponseEntity<List<SessionInfo>> addSessions(
             @PathVariable Long teacherID,
             @PathVariable Long offeringId,
-            @RequestParam String timezone,
             @RequestBody List<SessionRequest> sessionRequests) {
 
         Teacher teacher = teacherService.validateAndGetTeacher(teacherID);

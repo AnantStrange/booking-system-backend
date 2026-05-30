@@ -1,0 +1,4 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/api/parents/{{parentId}}/sessions'
+order: 10000

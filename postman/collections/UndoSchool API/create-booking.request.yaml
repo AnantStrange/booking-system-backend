@@ -1,0 +1,7 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/api/parents/{{parentId}}/bookings'
+order: 12000
+queryParams:
+  - key: offeringId
+    value: '{{offeringId}}'

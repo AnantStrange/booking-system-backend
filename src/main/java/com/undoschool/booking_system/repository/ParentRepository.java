@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParentRepository extends JpaRepository<Parent, Long> {
-    public String getTimeZoneById();
 }

@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql-booking
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: booking_system
+      MYSQL_USER: anant
+      MYSQL_PASSWORD: anant
+    ports:
+      - "3306:3306"
+    networks:
+      - booking-network
+
+  app:
+    build: .
+    container_name: booking-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/booking_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC 
+      SPRING_DATASOURCE_USERNAME: anant
+      SPRING_DATASOURCE_PASSWORD: anant
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - booking-network
+
+networks:
+  booking-network:
+    driver: bridge

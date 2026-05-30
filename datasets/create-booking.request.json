@@ -1,0 +1,22 @@
+[
+  {
+    "parentId": 1,
+    "offeringId": 1
+  },
+  {
+    "parentId": 1,
+    "offeringId": 1
+  },
+  {
+    "parentId": 1,
+    "offeringId": 5
+  },
+  {
+    "parentId": 2,
+    "offeringId": 2
+  },
+  {
+    "parentId": 1,
+    "offeringId": 99
+  }
+]
