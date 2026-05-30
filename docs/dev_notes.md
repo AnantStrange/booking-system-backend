@@ -1,14 +1,8 @@
-to do 
+# DEV NOTES !!
+## NOT FOR USER, NOT DOCUMENTATIONS, NO WARRANTY !
+---
 
-Requirement	Status	What to Check
-Session timings in parent's local timezone	⚠️	SessionDTO has startTimeLocal/endTimeLocal - verify timezone conversion uses parent's timezone
-
-Prevent overlapping bookings across offerings	⚠️	Your BookingService checks ALL existing bookings for conflicts - verify logic
-
-Session contains Offering ID, Teacher ID, Start time, End time	⚠️	Session entity has offeringId, startTime, endTime. Teacher ID is on Offering, not Session
-
-
-API_CODE.md - Implementation Reference
+# Implementation Reference
 
 - [x] **GET**   /parents/{parentId}/offerings
 - [x] **GET**   /parents/{parentId}/sessions

@@ -1,61 +1,91 @@
 [
   {
+    "teacherId": 1,
     "offeringId": 1,
     "startTime": "2026-06-07T10:00:00",
     "endTime": "2026-06-07T12:00:00"
   },
   {
+    "teacherId": 1,
     "offeringId": 1,
     "startTime": "2026-06-14T10:00:00",
     "endTime": "2026-06-14T12:00:00"
   },
   {
+    "teacherId": 1,
     "offeringId": 1,
     "startTime": "2026-06-21T10:00:00",
     "endTime": "2026-06-21T12:00:00"
   },
   {
+    "teacherId": 1,
     "offeringId": 2,
     "startTime": "2026-06-07T17:00:00",
     "endTime": "2026-06-07T19:00:00"
   },
   {
+    "teacherId": 1,
     "offeringId": 2,
     "startTime": "2026-06-14T17:00:00",
     "endTime": "2026-06-14T19:00:00"
   },
   {
+    "teacherId": 1,
     "offeringId": 2,
     "startTime": "2026-06-21T17:00:00",
     "endTime": "2026-06-21T19:00:00"
   },
   {
+    "teacherId": 1,
     "offeringId": 3,
     "startTime": "2026-06-07T10:00:00",
     "endTime": "2026-06-07T12:00:00"
   },
   {
+    "teacherId": 1,
     "offeringId": 3,
     "startTime": "2026-06-14T10:00:00",
     "endTime": "2026-06-14T12:00:00"
   },
   {
+    "teacherId": 1,
     "offeringId": 3,
     "startTime": "2026-06-21T10:00:00",
     "endTime": "2026-06-21T12:00:00"
   },
   {
+    "teacherId": 2,
     "offeringId": 4,
+    "startTime": "2026-06-07T10:00:00",
+    "endTime": "2026-06-07T12:00:00"
+  },
+  {
+    "teacherId": 2,
+    "offeringId": 4,
+    "startTime": "2026-06-14T10:00:00",
+    "endTime": "2026-06-14T12:00:00"
+  },
+  {
+    "teacherId": 2,
+    "offeringId": 4,
+    "startTime": "2026-06-21T10:00:00",
+    "endTime": "2026-06-21T12:00:00"
+  },
+  {
+    "teacherId": 2,
+    "offeringId": 5,
     "startTime": "2026-06-07T17:00:00",
     "endTime": "2026-06-07T19:00:00"
   },
   {
-    "offeringId": 4,
+    "teacherId": 2,
+    "offeringId": 5,
     "startTime": "2026-06-14T17:00:00",
     "endTime": "2026-06-14T19:00:00"
   },
   {
-    "offeringId": 4,
+    "teacherId": 2,
+    "offeringId": 5,
     "startTime": "2026-06-21T17:00:00",
     "endTime": "2026-06-21T19:00:00"
   }

@@ -321,3 +321,9 @@ spring.flyway.baseline-on-migrate=true
 * Eager loading - Sessions loaded with offerings to prevent N+1 queries
 * Indexes - Foreign keys automatically indexed by JPA
 
+---
+* [API Documentation](./api_doc.md) - Complete API reference with examples
+* [Code Documentation](./code_doc.md) - Architecture and implementation details
+* [Build Documentation](./build_doc.md) - Container and deployment setup
+* [Database Documentation](./db_docs.md) - Database schema and design decisions
+* [Development Notes](./dev_notes.md) - Database schema and design decisions

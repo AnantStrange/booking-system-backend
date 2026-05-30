@@ -4,7 +4,7 @@
 
 * Java 21
 * Maven 3.8+
-* Podman or Docker
+* Podman or Docker (both are interchangable)
 * Git
 
 ---
@@ -13,13 +13,11 @@
 
 ```bash
 ./mvnw clean package && podman-compose up -d --build
+
+# Check status
+podman ps
 ```
 
-Wait 30 seconds for MySQL to initialize, then test:
-
-```bash
-curl http://localhost:8080/api/courses
-```
 
 ---
 
@@ -28,7 +26,7 @@ curl http://localhost:8080/api/courses
 ### 1. Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/AnantStrange/booking-system-backend
 cd booking-system-backend
 ```
 
@@ -44,17 +42,15 @@ This creates the `target/*.jar` file.
 
 ```bash
 podman-compose up -d --build
-```
 
-Or with Docker:
-
-```bash
+# Or with Docker:
 docker-compose up -d --build
 ```
 
 ### 4. Wait for MySQL Initialization
 
-MySQL takes 15-20 seconds to fully start. The app will retry connecting automatically (60 second timeout configured).
+MySQL could sometimes take longer to be ready, then app is initialized which leads to database
+connection error. The app will retry connecting automatically (60 second timeout configured).
 
 ### 5. Verify Running Containers
 
@@ -161,7 +157,6 @@ spring.flyway.baseline-on-migrate=true
 ### App Can't Connect to MySQL
 
 **Error:** Communications link failure
-
 **Fix:** Increase connection timeout in `application.properties`:
 
 ```properties
@@ -178,17 +173,15 @@ podman-compose up -d --build
 ### MySQL Not Ready
 
 **Error:** Access denied for user
-
 **Fix:** Wait 30 seconds after starting containers, then restart app:
 
 ```bash
-podman-compose restart app
+podman-compose restart booking-app
 ```
 
 ### Port Already in Use
 
 **Error:** port already allocated
-
 **Fix:** Stop existing containers or change ports:
 
 ```bash
@@ -202,7 +195,6 @@ kill -9 <PID>
 ### Flyway Migration Fails
 
 **Error:** Flyway migration error
-
 **Fix:** Clean database and restart:
 
 ```bash
@@ -213,7 +205,6 @@ podman-compose restart app
 ### Container Image Not Found
 
 **Error:** short-name did not resolve
-
 **Fix:** Use full registry path in Dockerfile:
 
 ```dockerfile
@@ -267,10 +258,8 @@ podman volume prune
 
 ## Important Notes for Demo
 
-* Wait 30 seconds after `podman-compose up` before testing
-* MySQL must be fully initialized before app can connect
-* Connection timeout is set to 60 seconds, so app will retry
-* If API returns empty array `[]`, that's normal (no data yet)
+* If at start API returns empty array `[]`, that's normal, you need to fill db with data via
+  **POST** requests first.
 * Use Postman collection to create test data first, then test GET endpoints
 
 ---
@@ -296,3 +285,9 @@ For MySQL connection issues, verify MySQL is ready:
 podman logs mysql-booking | grep "ready for connections"
 ```
 
+---
+* [API Documentation](./api_doc.md) - Complete API reference with examples
+* [Code Documentation](./code_doc.md) - Architecture and implementation details
+* [Build Documentation](./build_doc.md) - Container and deployment setup
+* [Database Documentation](./db_docs.md) - Database schema and design decisions
+* [Development Notes](./dev_notes.md) - Database schema and design decisions

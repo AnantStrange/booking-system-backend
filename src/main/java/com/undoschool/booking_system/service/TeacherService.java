@@ -9,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.persistence.EntityNotFoundException;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -57,19 +60,21 @@ public class TeacherService {
      */
     @Transactional
     public List<Session> addSessions(Long offeringId, List<SessionRequest> sessionRequests, String teacherTimezone) {
-        offeringRepository.findById(offeringId).orElseThrow(()
-                -> new EntityNotFoundException("Offering not found"));
+        offeringRepository.findById(offeringId).orElseThrow(() -> new EntityNotFoundException("Offering not found"));
 
         List<Session> sessions = sessionRequests.stream().map(req -> {
             Session session = new Session();
             session.setOfferingId(offeringId);
 
-            // Convert teacher's local time to UTC for storage
-            ZonedDateTime localStart = ZonedDateTime.parse(req.startTime);
-            ZonedDateTime localEnd = ZonedDateTime.parse(req.endTime);
+            // Parse as LocalDateTime (no timezone), then apply teacher's timezone
+            LocalDateTime localStart = LocalDateTime.parse(req.getStartTime());
+            LocalDateTime localEnd = LocalDateTime.parse(req.getEndTime());
 
-            session.setStartTime(timezoneService.toUTC(localStart, teacherTimezone));
-            session.setEndTime(timezoneService.toUTC(localEnd, teacherTimezone));
+            ZonedDateTime zonedStart = localStart.atZone(ZoneId.of(teacherTimezone));
+            ZonedDateTime zonedEnd = localEnd.atZone(ZoneId.of(teacherTimezone));
+
+            session.setStartTime(zonedStart.toInstant());
+            session.setEndTime(zonedEnd.toInstant());
             session.setCreatedAt(timezoneService.nowUTC());
 
             return session;

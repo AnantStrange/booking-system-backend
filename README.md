@@ -19,11 +19,8 @@ Teachers create courses and offerings with sessions. Parents view available offe
 ## Quick Start
 
 ```bash
-# Start MySQL container
-podman run -d --name mysql-booking -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=booking_system mysql:8.4
-
-# Run the application
-./mvnw spring-boot:run
+./mvnw clean package
+podman-composer up -d --build
 ```
 
 Application runs at:
@@ -51,7 +48,7 @@ http://localhost:8080
 | GET    | `/api/courses/{id}`                     | Get course with offerings  |
 | GET    | `/api/offerings/{id}`                   | Get offering with sessions |
 
-For detailed API documentation with request/response examples, see [API Documentation][./mds/api_doc.md].
+For detailed API documentation with request/response examples, see [API Documentation](./docs/api_doc.md).
 
 ## Database Schema
 
@@ -62,7 +59,7 @@ For detailed API documentation with request/response examples, see [API Document
 * `parents` - Parent/student information with timezone
 * `bookings` - Parent offering enrollments
 
-For complete schema with field definitions and relationships, see Database Schema.
+For complete schema with field definitions and relationships, see [DataBase Documentation](./docs/db_docs).
 
 ## Key Design Decisions
 
@@ -89,14 +86,12 @@ For complete schema with field definitions and relationships, see Database Schem
 
 * Teachers and parents have timezone field set during creation
 * Session times are provided by teachers in their local timezone
-* All session times are stored as UTC in database
 * An offering must have at least one session before parents can book it
 * One parent cannot book the same offering twice
-* Cancellation is not implemented in current version
 
 ## Environment Configuration
 
-Create `src/main/resources/application.properties`:
+Make Sure `src/main/resources/application.properties` Contains :
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/booking_system useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
@@ -110,21 +105,26 @@ server.port=8080
 ## Running with Podman
 
 ```bash
-# Start MySQL
-podman run -d --name mysql-booking -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=booking_system mysql:8.4
+# Make Sure app.jar exist.
+./mvnw clean package
+
+# Start App and Mysql services
+podman-composer up -d --build
 
 # Verify container is running
 podman ps
 
 # Stop when done
-podman stop mysql-booking
+podman-composer down 
 ```
 
 ## Testing with Postman
 
 Import the Postman collection from `postman/collections/` folder.
+Make all the **POST** reuests first to create data and then feel free to **GET** anything from the
+endpoints.
 
-See Build Documentation for detailed container setup and deployment.
+See [Build Documentation](./docs/build_doc.md) for detailed container setup and deployment.
 
 ## Documentation Links
 
@@ -133,8 +133,4 @@ See Build Documentation for detailed container setup and deployment.
 * [Build Documentation](./docs/build_doc.md) - Container and deployment setup
 * [Database Documentation](./docs/db_docs.md) - Database schema and design decisions
 * [Development Notes](./docs/dev_notes.md) - Database schema and design decisions
-
-## License
-
-Educational project for demonstration purposes.
 
